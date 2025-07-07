@@ -11,7 +11,7 @@
 ## 2. Projeyi Bilgisayarına İndir
 Eğer GitHub'dan klonlayacaksan:
 ```sh
-git clone https://github.com/kullaniciadiniz/renart.git
+git clone https://github.com/Berbtv/renart.git
 cd renart
 ```
 Veya dosyaları doğrudan indirip bir klasöre çıkar.
@@ -42,30 +42,19 @@ npm start
 
 ---
 
-## 5. Her İkisini Aynı Anda Başlatmak (Opsiyonel)
 
-Frontend klasöründe şu komutu kullanabilirsin:
-```sh
-npm run dev
-```
-Bu komut hem backend'i hem frontend'i aynı anda başlatır.  
-(Bunun için `concurrently` paketi otomatik olarak kurulmuş olmalı.)
 
----
-
-## 6. Tarayıcıda Aç
+## 5. Tarayıcıda Aç
 
 - Frontend otomatik açılmazsa, tarayıcıda `http://localhost:3000` adresine git.
 - Ürünler ve filtreleme paneli ekranda görünecek.
 
 ---
 
-## 7. Sık Karşılaşılan Sorunlar
+## 6. Sık Karşılaşılan Sorunlar
 
 - **Port çakışması:** Eğer 3000 veya 5113 portu başka bir uygulama tarafından kullanılıyorsa, ilgili uygulamayı kapat veya portu değiştir.
 - **API bağlantı hatası:** Backend'in çalıştığından ve proxy ayarının doğru olduğundan emin ol.
 - **node_modules veya bin/obj gibi klasörler:** Bunlar `.gitignore` ile repoya eklenmez, eksikse `npm install` ve `dotnet restore` komutlarını tekrar çalıştır.
 
 ---
-
-Herhangi bir hata veya sorunla karşılaşırsan, hata mesajını bana iletebilirsin! 
