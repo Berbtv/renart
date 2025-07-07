@@ -60,6 +60,16 @@ else
     app.UseHsts();
 }
 
+var builder = WebApplication.CreateBuilder(args);
+
+// Render'ın portunu dinle
+var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
+builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
+
+var app = builder.Build();
+app.MapGet("/", () => "API çalışıyor!");
+
+
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();

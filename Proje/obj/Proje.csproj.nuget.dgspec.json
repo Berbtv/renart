@@ -1,17 +1,17 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\berat\\Desktop\\renart\\Proje\\Proje.csproj": {}
+    "D:\\renart\\Proje\\Proje.csproj": {}
   },
   "projects": {
-    "C:\\Users\\berat\\Desktop\\renart\\Proje\\Proje.csproj": {
+    "D:\\renart\\Proje\\Proje.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\berat\\Desktop\\renart\\Proje\\Proje.csproj",
+        "projectUniqueName": "D:\\renart\\Proje\\Proje.csproj",
         "projectName": "Proje",
-        "projectPath": "C:\\Users\\berat\\Desktop\\renart\\Proje\\Proje.csproj",
+        "projectPath": "D:\\renart\\Proje\\Proje.csproj",
         "packagesPath": "C:\\Users\\berat\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\berat\\Desktop\\renart\\Proje\\obj\\",
+        "outputPath": "D:\\renart\\Proje\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
