@@ -10,6 +10,8 @@ builder.Services.AddControllers(); // API controllers için
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<GoldPriceService>();
+builder.WebHost.UseUrls("http://0.0.0.0:" + (Environment.GetEnvironmentVariable("PORT") ?? "5000"));
+
 
 // API için CORS politikası ekle
 builder.Services.AddCors(options =>
