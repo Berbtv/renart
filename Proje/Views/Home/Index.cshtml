@@ -1,0 +1,305 @@
+﻿@model List<Proje.Models.Product>
+
+@{
+    ViewData["Title"] = "Ana Sayfa";
+}
+
+<div class="text-center mb-4">
+    <h1 class="display-4">Proje</h1>
+    <p class="lead">En güzel nişan yüzüklerini keşfedin</p>
+</div>
+
+<!-- Filtreleme Paneli -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0">
+                    <i class="fas fa-filter"></i> Filtreleme
+                    <button class="btn btn-sm btn-outline-secondary float-end" id="clearFilters">
+                        <i class="fas fa-times"></i> Filtreleri Temizle
+                    </button>
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-3">
+                        <label for="minPrice" class="form-label">Minimum Fiyat ($)</label>
+                        <input type="number" class="form-control" id="minPrice" placeholder="0">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="maxPrice" class="form-label">Maksimum Fiyat ($)</label>
+                        <input type="number" class="form-control" id="maxPrice" placeholder="1000">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="minPopularity" class="form-label">Minimum Popülerlik (1-5)</label>
+                        <input type="number" class="form-control" id="minPopularity" min="1" max="5" step="1" placeholder="1">
+                    </div>
+                    <div class="col-md-3">
+                        <label for="maxPopularity" class="form-label">Maksimum Popülerlik (1-5)</label>
+                        <input type="number" class="form-control" id="maxPopularity" min="1" max="5" step="1" placeholder="5">
+                    </div>
+                </div>
+                <div class="row mt-3">
+                    <div class="col-12">
+                        <button class="btn btn-primary" id="applyFilters">
+                            <i class="fas fa-search"></i> Filtrele
+                        </button>
+                        <span id="filterStatus" class="ms-3 text-muted"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Ürünler -->
+<div class="row" id="productsContainer">
+    @foreach (var product in Model)
+    {
+        <div class="col-md-6 col-lg-4 mb-4 product-item" 
+             data-price="@product.Price" 
+             data-popularity="@product.PopularityScore">
+            <div class="card h-100">
+                <div class="card-body">
+                    <h5 class="card-title">@product.Name</h5>
+                    <div class="product-images mb-3">
+                        <div class="btn-group" role="group">
+                            <input type="radio" class="btn-check" name="metal-@product.Name" id="white-@product.Name" value="white" checked>
+                            <label class="btn btn-outline-secondary btn-sm" for="white-@product.Name">Beyaz Altın</label>
+                            
+                            <input type="radio" class="btn-check" name="metal-@product.Name" id="yellow-@product.Name" value="yellow">
+                            <label class="btn btn-outline-secondary btn-sm" for="yellow-@product.Name">Sarı Altın</label>
+                            
+                            <input type="radio" class="btn-check" name="metal-@product.Name" id="rose-@product.Name" value="rose">
+                            <label class="btn btn-outline-secondary btn-sm" for="rose-@product.Name">Rose Altın</label>
+                        </div>
+                    </div>
+                    
+                    <div class="product-image-container mb-3">
+                        <img src="@product.Images.White" class="img-fluid product-image" alt="@product.Name" data-white="@product.Images.White" data-yellow="@product.Images.Yellow" data-rose="@product.Images.Rose">
+                    </div>
+                    
+                    <div class="product-info">
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Ağırlık: @product.Weight g<br>
+                                Popülerlik: @product.PopularityScoreOutOf5
+                            </small>
+                        </p>
+                        <div class="price-info">
+                            <h6 class="text-primary mb-0">
+                                <strong>@product.PriceFormatted</strong>
+                            </h6>
+                            <small class="text-muted">
+                                Gerçek zamanlı altın fiyatı ile hesaplanmıştır
+                            </small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-grid">
+                        <button class="btn btn-outline-primary" disabled>Ürün Detayları</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<!-- Sonuç Yok Mesajı -->
+<div id="noResults" class="text-center" style="display: none;">
+    <div class="alert alert-info">
+        <i class="fas fa-info-circle"></i>
+        <strong>Sonuç bulunamadı!</strong> Filtre kriterlerinizi değiştirmeyi deneyin.
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Metal tipi değiştiğinde resmi güncelle
+            $('input[type="radio"]').change(function() {
+                var productName = $(this).attr('name').replace('metal-', '');
+                var metalType = $(this).val();
+                var image = $('img[alt="' + productName + '"]');
+                
+                image.attr('src', image.data(metalType));
+            });
+
+            // Filtreleme fonksiyonları
+            $('#applyFilters').click(function() {
+                applyFilters();
+            });
+
+            $('#clearFilters').click(function() {
+                clearFilters();
+            });
+
+            // Sayfa yüklendiğinde tüm ürünleri yükle
+            loadAllProducts();
+
+            // Enter tuşu ile filtreleme
+            $('.form-control').keypress(function(e) {
+                if (e.which == 13) {
+                    applyFilters();
+                }
+            });
+
+            function applyFilters() {
+                var minPrice = parseFloat($('#minPrice').val()) || 0;
+                var maxPrice = parseFloat($('#maxPrice').val()) || Infinity;
+                var minPopularity = parseFloat($('#minPopularity').val()) || 0;
+                var maxPopularity = parseFloat($('#maxPopularity').val()) || 5;
+
+                // Popülerlik 5 üzerinden ondalığa çevir (1-5 -> 0.2-1.0)
+                minPopularity = minPopularity / 5;
+                maxPopularity = maxPopularity / 5;
+
+                console.log('Filter Parameters:', {
+                    minPrice: minPrice,
+                    maxPrice: maxPrice,
+                    minPopularity: minPopularity,
+                    maxPopularity: maxPopularity
+                });
+
+                // API'den filtreli verileri al
+                var apiUrl = '/api/products/filter?';
+                var params = [];
+                
+                if (minPrice > 0) params.push('minPrice=' + minPrice);
+                if (maxPrice < Infinity) params.push('maxPrice=' + maxPrice);
+                if (minPopularity > 0) params.push('minPopularity=' + minPopularity);
+                if (maxPopularity < 1) params.push('maxPopularity=' + maxPopularity);
+
+                apiUrl += params.join('&');
+                console.log('API URL:', apiUrl);
+
+                $('#filterStatus').html('<i class="fas fa-spinner fa-spin"></i> Filtreleniyor...');
+
+                $.ajax({
+                    url: apiUrl,
+                    method: 'GET',
+                    success: function(response) {
+                        console.log('API Response:', response); // Debug için
+                        if (response.success) {
+                            updateProductDisplay(response.data);
+                            $('#filterStatus').html('<i class="fas fa-check text-success"></i> ' + response.message);
+                        } else {
+                            $('#filterStatus').html('<i class="fas fa-exclamation-triangle text-warning"></i> ' + response.message);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        $('#filterStatus').html('<i class="fas fa-times text-danger"></i> Filtreleme hatası: ' + error);
+                        console.error('Filtreleme hatası:', error);
+                        console.error('Response:', xhr.responseText); // Debug için
+                    }
+                });
+            }
+
+            function updateProductDisplay(products) {
+                console.log('Products to display:', products); // Debug için
+                var container = $('#productsContainer');
+                container.empty();
+
+                if (!products || products.length === 0) {
+                    $('#noResults').show();
+                    return;
+                }
+
+                $('#noResults').hide();
+
+                products.forEach(function(product) {
+                    var productHtml = `
+                        <div class="col-md-6 col-lg-4 mb-4 product-item" 
+                             data-price="${product.price}" 
+                             data-popularity="${product.popularityScore}">
+                            <div class="card h-100">
+                                <div class="card-body">
+                                    <h5 class="card-title">${product.name}</h5>
+                                    <div class="product-images mb-3">
+                                        <div class="btn-group" role="group">
+                                            <input type="radio" class="btn-check" name="metal-${product.name}" id="white-${product.name}" value="white" checked>
+                                            <label class="btn btn-outline-secondary btn-sm" for="white-${product.name}">Beyaz Altın</label>
+                                            
+                                            <input type="radio" class="btn-check" name="metal-${product.name}" id="yellow-${product.name}" value="yellow">
+                                            <label class="btn btn-outline-secondary btn-sm" for="yellow-${product.name}">Sarı Altın</label>
+                                            
+                                            <input type="radio" class="btn-check" name="metal-${product.name}" id="rose-${product.name}" value="rose">
+                                            <label class="btn btn-outline-secondary btn-sm" for="rose-${product.name}">Rose Altın</label>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="product-image-container mb-3">
+                                        <img src="${product.images.white}" class="img-fluid product-image" alt="${product.name}" 
+                                             data-white="${product.images.white}" data-yellow="${product.images.yellow}" data-rose="${product.images.rose}">
+                                    </div>
+                                    
+                                    <div class="product-info">
+                                        <p class="card-text">
+                                            <small class="text-muted">
+                                                Ağırlık: ${product.weight} g<br>
+                                                Popülerlik: ${product.popularityScoreOutOf5}
+                                            </small>
+                                        </p>
+                                        <div class="price-info">
+                                            <h6 class="text-primary mb-0">
+                                                <strong>${product.priceFormatted}</strong>
+                                            </h6>
+                                            <small class="text-muted">
+                                                Gerçek zamanlı altın fiyatı ile hesaplanmıştır
+                                            </small>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-grid">
+                                        <button class="btn btn-outline-primary" disabled>Ürün Detayları</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    container.append(productHtml);
+                });
+
+                // Yeni eklenen ürünler için event listener'ları yeniden bağla
+                $('input[type="radio"]').off('change').on('change', function() {
+                    var productName = $(this).attr('name').replace('metal-', '');
+                    var metalType = $(this).val();
+                    var image = $('img[alt="' + productName + '"]');
+                    
+                    image.attr('src', image.data(metalType));
+                });
+            }
+
+            function loadAllProducts() {
+                $.ajax({
+                    url: '/api/products',
+                    method: 'GET',
+                    success: function(response) {
+                        console.log('All Products Response:', response);
+                        if (response.success) {
+                            console.log('All products data:', response.data);
+                            updateProductDisplay(response.data);
+                        }
+                    },
+                    error: function(xhr, status, error) {
+                        console.error('Load all products error:', error);
+                        console.error('Response:', xhr.responseText);
+                    }
+                });
+            }
+
+            function clearFilters() {
+                $('#minPrice').val('');
+                $('#maxPrice').val('');
+                $('#minPopularity').val('1');
+                $('#maxPopularity').val('5');
+                $('#filterStatus').html('');
+                $('#noResults').hide();
+                
+                // Tüm ürünleri tekrar göster
+                loadAllProducts();
+            }
+        });
+    </script>
+}

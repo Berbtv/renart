@@ -1,0 +1,74 @@
+﻿@{
+    ViewData["Title"] = "API Test";
+}
+<h1>@ViewData["Title"]</h1>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Ürünler API Testi</h5>
+            </div>
+            <div class="card-body">
+                <button id="getProducts" class="btn btn-primary mb-3">Ürünleri Getir</button>
+                <div id="productsResult" class="border p-3 bg-light" style="display: none;">
+                    <h6>Sonuç:</h6>
+                    <pre id="productsData"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h5>Altın Fiyatı API Testi</h5>
+            </div>
+            <div class="card-body">
+                <button id="getGoldPrice" class="btn btn-success mb-3">Altın Fiyatını Getir</button>
+                <div id="goldPriceResult" class="border p-3 bg-light" style="display: none;">
+                    <h6>Sonuç:</h6>
+                    <pre id="goldPriceData"></pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Ürünleri getir
+            $('#getProducts').click(function() {
+                $.ajax({
+                    url: '/api/products',
+                    method: 'GET',
+                    success: function(response) {
+                        $('#productsData').text(JSON.stringify(response, null, 2));
+                        $('#productsResult').show();
+                    },
+                    error: function(xhr, status, error) {
+                        $('#productsData').text('Hata: ' + error);
+                        $('#productsResult').show();
+                    }
+                });
+            });
+            
+            // Altın fiyatını getir
+            $('#getGoldPrice').click(function() {
+                $.ajax({
+                    url: '/api/products/gold-price',
+                    method: 'GET',
+                    success: function(response) {
+                        $('#goldPriceData').text(JSON.stringify(response, null, 2));
+                        $('#goldPriceResult').show();
+                    },
+                    error: function(xhr, status, error) {
+                        $('#goldPriceData').text('Hata: ' + error);
+                        $('#goldPriceResult').show();
+                    }
+                });
+            });
+        });
+    </script>
+}

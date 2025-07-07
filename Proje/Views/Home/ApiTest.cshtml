@@ -1,0 +1,139 @@
+@{
+    ViewData["Title"] = "API Test";
+}
+
+<div class="container mt-4">
+    <h1>API Test Sayfası</h1>
+    <p class="lead">RESTful API endpoint'lerini test etmek için bu sayfayı kullanabilirsiniz.</p>
+
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>Ürünler API</h5>
+                </div>
+                <div class="card-body">
+                    <h6>GET /api/products</h6>
+                    <p>Tüm ürünleri getirir</p>
+                    <button class="btn btn-primary btn-sm" onclick="testGetProducts()">Test Et</button>
+                    
+                    <hr>
+                    
+                    <h6>GET /api/products/{name}</h6>
+                    <p>Belirli bir ürünü getirir</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="productName" placeholder="Ürün adı">
+                        <button class="btn btn-primary" onclick="testGetProduct()">Test Et</button>
+                    </div>
+                    
+                    <hr>
+                    
+                    <h6>GET /api/products/search?query={query}</h6>
+                    <p>Ürün arama yapar</p>
+                    <div class="input-group mb-3">
+                        <input type="text" class="form-control" id="searchQuery" placeholder="Arama terimi">
+                        <button class="btn btn-primary" onclick="testSearchProducts()">Test Et</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5>API Bilgileri</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Swagger UI</h6>
+                    <p>API dokümantasyonu için Swagger UI kullanın</p>
+                    <a href="/api-docs" class="btn btn-info btn-sm" target="_blank">Swagger UI Aç</a>
+                    
+                    <hr>
+                    
+                    <h6>API Endpoint'leri</h6>
+                    <ul class="list-unstyled">
+                        <li><code>GET /api/products</code> - Tüm ürünler</li>
+                        <li><code>GET /api/products/{name}</code> - Belirli ürün</li>
+                        <li><code>GET /api/products/search?query={query}</code> - Ürün arama</li>
+                    </ul>
+                    
+                    <hr>
+                    
+                    <h6>Response Format</h6>
+                    <p>Tüm API yanıtları standart JSON formatında döner:</p>
+                    <pre class="bg-light p-2 rounded small">{
+  "success": true,
+  "message": "İşlem başarılı",
+  "data": {},
+  "timestamp": "2024-01-01T00:00:00.000Z"
+}</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header">
+                    <h5>API Yanıtı</h5>
+                </div>
+                <div class="card-body">
+                    <pre id="apiResponse" class="bg-light p-3 rounded" style="max-height: 400px; overflow-y: auto;">API yanıtları burada görünecek...</pre>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        function showResponse(data) {
+            document.getElementById('apiResponse').textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testGetProducts() {
+            try {
+                const response = await fetch('/api/products');
+                const data = await response.json();
+                showResponse(data);
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        }
+
+        async function testGetProduct() {
+            const productName = document.getElementById('productName').value;
+            if (!productName) {
+                alert('Lütfen ürün adı girin');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/products/${encodeURIComponent(productName)}`);
+                const data = await response.json();
+                showResponse(data);
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        }
+
+        async function testSearchProducts() {
+            const query = document.getElementById('searchQuery').value;
+            if (!query) {
+                alert('Lütfen arama terimi girin');
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/products/search?query=${encodeURIComponent(query)}`);
+                const data = await response.json();
+                showResponse(data);
+            } catch (error) {
+                showResponse({ error: error.message });
+            }
+        }
+
+
+    </script>
+} 
