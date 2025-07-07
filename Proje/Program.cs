@@ -10,7 +10,7 @@ builder.Services.AddControllers(); // API controllers için
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<GoldPriceService>();
-builder.WebHost.UseUrls("http://0.0.0.0:" + (Environment.GetEnvironmentVariable("PORT") ?? "5000"));
+
 
 
 // API için CORS politikası ekle
@@ -59,15 +59,6 @@ else
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
-
-var builder = WebApplication.CreateBuilder(args);
-
-// Render'ın portunu dinle
-var port = Environment.GetEnvironmentVariable("PORT") ?? "5000";
-builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
-
-var app = builder.Build();
-app.MapGet("/", () => "API çalışıyor!");
 
 
 app.UseHttpsRedirection();
